@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<br />
+<h1 class="title"> View task</h1>
+<form method="post">
+ <table class="table is-fullwidth">
+
+    <tr>
+        <th>Task ID</th>
+
+            <td>{{ task[0]['id'] }}
+        </td>
+        </tr>
+        <tr><th>Description</th><td>{{ task[0]['description'] }}</td></tr>
+
+        <tr><th>Project</th><td>
+                {% if task[0]['project'] %}
+                <a href="{{ url_for('view_projects', project=task[0]['project']) }}">
+                    {{ task[0]['project'] }}</a>
+                {% endif %}
+            </td></tr>
+        <tr><th>Due date</th><td>{{ task[0]['due'] }}</td></tr>
+        <tr><th>Tags</th><td>
+                {% for tag in task[0]['tags'] %}
+                <a href="{{ url_for('view_tags', tag=tag)}}">{{ tag }}</a><br />
+                {% endfor %}</td></tr>
+        <tr><th>Priority</th><td>{{ task[0]['priority'] }}</td></tr>
+<!---        <tr><th>Email</th><td>
+                {% if task[0]['email'] %}
+                {{ task[0]['email'] | format_dates }}
+                {% endif %}
+                </td></tr>---!>
+        <tr><th>Waiting until</th><td> {{ task[0]['wait'] }}</td></tr>
+        <tr><th>Annotations</th><td>
+                {% for annotations in task[0]['annotations'] %}
+                {{ annotations }} <br />
+                                        {% endfor %}
+            </td></tr>
+</table>
+<div class="field is-grouped">
+    <div class="control">
+        <a class="button is-primary is-outlined is-big"
+           href="{{ request.path }}/edit">Edit</a>
+        <button class="button is-danger is-big">Delete</button>
+    </div>
+</div>
+</form>
+{% endblock content %}

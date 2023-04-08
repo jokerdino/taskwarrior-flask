@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<br />
+<h1 class="title"> List of tags</h1>
+
+{% if tags %}
+<table class="table">
+
+    <thead>
+        <th>Tag name</th>
+    </thead>
+
+    <tbody>
+        {% for tag in tags %}
+        <tr> <td>
+                <a href="{{ url_for('view_tags', tag=tag) }}">
+                    {{ tag }}</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+{% endif %}
+{% endblock content %}

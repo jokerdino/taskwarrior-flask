@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<br />
+
+<h1 class="title" >{{ title }}</h1>
+<form method="post" name="task_edit">
+    {{ form.csrf_token }}
+
+    <table class="table is-fullwidth">
+        <tr><th>{{ form.description.label }}</th> <td>{{ form.description (class = 'input') }}</td></tr>
+        <tr><th>{{ form.due_date.label }}</th><td>{{ form.due_date (class='input') }}</td></tr>
+        <tr><th>{{ form.tags.label }}</th><td>{{ form.tags(class='input') }}</td></tr>
+        <tr><th>{{ form.priority.label }}</th><td>{{ form.priority }}</td></tr>
+        <tr><th>{{ form.project.label }}</th><td>{{ form.project(class="input") }}</td></tr>
+        <!--- <tr><th>{{ form.email_date.label }}</th><td>{{ form.email_date(class="input") }}</td></tr>---!>
+        <tr><th>{{ form.wait_date.label }}</th><td>{{ form.wait_date(class="input") }}</td></tr>
+        {% if newtask %}
+        <tr><th> Existing annotations </th><td>
+                {% if task[0]['annotations'] %}
+                {% for annotations in task[0]['annotations'] %}
+                {{ annotations }} <br />
+                                        {% endfor %}
+                                        {% endif %}
+            </td></tr>{% endif %}
+        <tr><th> Add new annotations </th><td>{{ form.annotate(class="textarea", placeholder="Write your remarks here") }}</td></tr>
+    </table>
+    <div class="field is-grouped">
+        <button class="button is-primary is-big">Save</button>
+    </div>
+</form>
+
+{% endblock content %}

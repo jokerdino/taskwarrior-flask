@@ -1,0 +1,5 @@
+Flask==2.2.2
+Flask_WTF==1.0.1
+tasklib==2.4.3
+waitress==2.1.2
+WTForms==3.0.1

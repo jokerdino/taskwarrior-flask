@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<br />
+<h1 class="title">{{ title }}</h1>
+{% if tasks %}
+<form method="post">
+<table class="table is-hoverable is-striped" id="tasks-table">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Project</th>
+            <th>Due date</th>
+            <th>Tags</th>
+            <th>Priority</th>
+            <!---            <th>Date of email</th> ---!>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+    <tr>
+        <td>{{ task['description'] }}</td>
+        <td> {% if task['project'] %}
+        <a href="{{ url_for('view_projects', project=task['project']) }}">
+                {{ task['project'] }} </a>
+        {% endif %}
+        </td>
+    <td>{{ task['due'] }}</td>
+    <td>
+        {% for tag in task['tags'] %}
+        <a href="{{ url_for('view_tags', tag=tag)}}">{{ tag }}</a> <br />
+        {% endfor %}</td>
+    <td>{{ task['priority'] }}</td>
+<!---    <td>{% if task['email'] %}
+    {{ task['email'] | format_dates }}
+        {% endif %}---!>
+    </td>
+    <td>
+        {{ task['status'] }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <div class="field is-grouped">
+        <div class="control">
+        </div>
+    </div>
+</form>
+{% endif %}
+
+{% block scripts %}
+<script>
+            $(document).ready(function () {
+                            $('#tasks-table').DataTable({
+                                dom: 'lfBrtip',
+                                    fuzzySearch: true,
+                                buttons: [
+                                             {   extend: 'copyHtml5', className: 'is-danger is-rounded'},
+                                              { extend: 'csvHtml5', className: 'is-info is-rounded'},
+                                               { extend: 'excelHtml5', className: 'is-primary is-rounded'}],
+                                order: [[0,'asc']],
+                                            pagingType: 'full_numbers',
+                                lengthMenu: [
+                                             [10,25,50,100,-1],
+                                            [10,25,50,100,'All'],]
+                                        });
+                        });
+    </script>
+{% endblock scripts %}
+{% endblock content %}
