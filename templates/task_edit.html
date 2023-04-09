@@ -11,9 +11,9 @@
     <table class="table is-fullwidth">
         <tr><th>{{ form.description.label }}</th> <td>{{ form.description (class = 'input') }}</td></tr>
         <tr><th>{{ form.due_date.label }}</th><td>{{ form.due_date (class='input') }}</td></tr>
-        <tr><th>{{ form.tags.label }}</th><td>{{ form.tags(class='input') }}</td></tr>
+        <tr><th>{{ form.tags.label }}</th><td>{{ form.tags(class='input', id="tags") }}</td></tr>
         <tr><th>{{ form.priority.label }}</th><td>{{ form.priority }}</td></tr>
-        <tr><th>{{ form.project.label }}</th><td>{{ form.project(class="input") }}</td></tr>
+        <tr><th>{{ form.project.label }}</th><td>{{ form.project(class="input", id="projects") }}</td></tr>
         <!--- <tr><th>{{ form.email_date.label }}</th><td>{{ form.email_date(class="input") }}</td></tr>---!>
         <tr><th>{{ form.wait_date.label }}</th><td>{{ form.wait_date(class="input") }}</td></tr>
         {% if newtask %}
@@ -30,5 +30,31 @@
         <button class="button is-primary is-big">Save</button>
     </div>
 </form>
+{% block scripts %}
+    <script>
+  $( function() {
+    var availableTags = [
+        {% for tag in tags %}
+            "{{tag}}",
+        {% endfor %}
+    ];
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+  } );
+    </script>
 
+    <script>
+  $( function() {
+    var availableProjects = [
+        {% for project in projects %}
+            "{{project}}",
+        {% endfor %}
+    ];
+    $( "#projects" ).autocomplete({
+      source: availableProjects
+    });
+  } );
+    </script>
+    {% endblock scripts %}
 {% endblock content %}

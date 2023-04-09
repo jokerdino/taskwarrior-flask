@@ -10,6 +10,8 @@ tw = TaskWarrior("~/.task")  # make it configurable
 
 now = local_zone.localize(datetime.datetime.now())
 
+email_patch = False  # must be false if pushing to github
+
 
 def favicon():
     return url_for("static", filename="favicon.ico")
@@ -65,10 +67,11 @@ def add_task():
         new_task["due"] = form.data["due_date"]
         new_task["priority"] = form.data["priority"]
         new_task["project"] = form.data["project"]
-        form_tags = form.data["tags"]  # .replace(" ","")#strip()
+        form_tags = form.data["tags"]
         tags_list = form_tags.split(",")
         new_task["tags"] = tags_list
-        # new_task["email"] = form.data["email_date"]
+        if email_patch:
+            new_task["email"] = form.data["email_date"]
         new_task["wait"] = form.data["wait_date"]
         new_task.save()
         if form.data["annotate"] != "":
@@ -78,7 +81,12 @@ def add_task():
 
         return redirect(url_for("view_task", task_id=new_task["id"]))
     return render_template(
-        "task_edit.html", title="Create new task", form=form, new_task=True
+        "task_edit.html",
+        title="Create new task",
+        tags=get_tags(),
+        projects=get_projects(),
+        form=form,
+        new_task=True,
     )
 
 
@@ -95,7 +103,8 @@ def edit_task(task_id):
         form_tags = form.data["tags"]
         tags_list = form_tags.split(",")
         task[0]["tags"] = tags_list
-        # task[0]["email"] = form.data["email_date"]
+        if email_patch:
+            task[0]["email"] = form.data["email_date"]
         task[0]["wait"] = form.data["wait_date"]
         task[0].save()
         if form.data["annotate"] != "":
@@ -113,17 +122,22 @@ def edit_task(task_id):
         tag_string += tag + ","
     form.tags.data = tag_string
     form.wait_date.data = task[0]["wait"]
-
-    # if task[0]["email"] != None:
-    #    form.email_date.data = format_dates(task[0]["email"])
-
-    return render_template("task_edit.html", title="Edit task", task=task, form=form)
+    if email_patch:
+        if task[0]["email"] != None:
+            form.email_date.data = format_dates(task[0]["email"])
+    return render_template(
+        "task_edit.html",
+        title="Edit task",
+        projects=get_projects(),
+        tags=get_tags(),
+        task=task,
+        form=form,
+    )
 
 
 def view_tags(tag):
     title = "List of tasks with " + tag + " tag"
     tasks_pending = tw.tasks.pending().filter(tags__contains=[tag])
-    print(tasks_pending)
     if request.method == "POST":
         list_task_ids = request.form.getlist("task_ids")
         for task_id in list_task_ids:
@@ -145,24 +159,32 @@ def view_projects(project):
     return render_template("list_pending.html", title=title, tasks=tasks_pending)
 
 
-def list_projects():
+def get_projects():
     tasks_all = tw.tasks.all()
     projects = []
     for task in tasks_all:
         projects.append(task["project"])
     filtered_list = [x for x in projects if x is not None]
     unique_projects_list = list(set(filtered_list))
-    return render_template("projects.html", projects=unique_projects_list)
+    return unique_projects_list
 
 
-def list_tags():
+def list_projects():
+    return render_template("projects.html", projects=get_projects())
+
+
+def get_tags():
     tasks_all = tw.tasks.all()
     tags = []
     for task in tasks_all:
         for tag in task["tags"]:
             tags.append(tag)
     unique_tag_list = list(set(tags))
-    return render_template("tags.html", tags=unique_tag_list)
+    return unique_tag_list
+
+
+def list_tags():
+    return render_template("tags.html", tags=get_tags())
 
 
 def format_dates(string):
@@ -170,5 +192,7 @@ def format_dates(string):
         date_value = datetime.datetime.strptime(string, "%Y%m%dT%H%M%SZ")
         return date_value + datetime.timedelta(days=1)
     except ValueError as e:
-        ...
-        # print("Value error")
+        if email_patch:
+            print("Value error")
+        else:
+            ...
